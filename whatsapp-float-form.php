@@ -3,7 +3,7 @@
 Plugin Name: WhatsApp Float Form
 Plugin URI: https://netcommerce.mx
 Description: Formulario flotante con integración a WhatsApp.
-Version: 1.0.5
+Version: 1.1.0
 Author: Gerardo Murillo
 Author URI: https://netcommerce.mx
 */
@@ -36,26 +36,25 @@ function wff_enviar_correo($request) {
     $telefono = sanitize_text_field($params['telefono'] ?? '');
     $servicio = sanitize_text_field($params['servicio'] ?? '');
     $mensaje = sanitize_textarea_field($params['mensaje'] ?? '');
-    $utm_source = sanitize_text_field($params['utm_source'] ?? '');
-    $utm_medium = sanitize_text_field($params['utm_medium'] ?? '');
     $utm_campaign = sanitize_text_field($params['utm_campaign'] ?? '');
 
+    $dominio = parse_url(home_url(), PHP_URL_HOST);
     $destinatario = get_option('wff_destinatario_email', get_option('admin_email'));
     $asunto = 'Nuevo mensaje del formulario flotante';
-    $contenido = "Hola, recibiste un nuevo mensaje desde el formulario de tu sitio web:\n\n" .
+
+    $contenido = "Hola, recibiste un nuevo lead desde $dominio:\n\n" .
                  "Nombre: $nombre\n" .
                  "Correo: $email\n" .
                  "Teléfono: $telefono\n" .
                  "Servicio: $servicio\n" .
                  "Mensaje: $mensaje\n\n" .
-                 "UTM Source: $utm_source\n" .
-                 "UTM Medium: $utm_medium\n" .
-                 "UTM Campaign: $utm_campaign";
+                 "Campaña: $utm_campaign";
 
     wp_mail($destinatario, $asunto, $contenido);
 
     return rest_ensure_response(['success' => true]);
 }
+
 
 // Configuración desde el panel de WordPress
 add_action('admin_menu', function () {
