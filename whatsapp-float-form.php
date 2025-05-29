@@ -2,7 +2,7 @@
 /*
 Plugin Name: WhatsApp Float Form
 Description: Formulario flotante con integración a WhatsApp.
-Version: 1.0.0
+Version: 1.0.1
 Author: Gerardo Murillo
 */
 
