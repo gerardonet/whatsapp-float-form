@@ -3,7 +3,7 @@
 Plugin Name: WhatsApp Float Form
 Plugin URI: https://netcommerce.mx
 Description: Formulario flotante con integración a WhatsApp.
-Version: 1.0.3
+Version: 1.0.4
 Author: Gerardo Murillo
 Author URI: https://netcommerce.mx
 */
@@ -70,22 +70,36 @@ add_action('admin_menu', function () {
 
 add_action('admin_init', function () {
     register_setting('wff_settings_group', 'wff_destinatario_email');
+    register_setting('wff_settings_group', 'wff_whatsapp_number'); // <- NUEVO
 
     add_settings_section(
         'wff_settings_section',
         'Configuración del destinatario',
         function () {
-            echo '<p>Ingresa el correo donde se enviarán los mensajes desde el formulario flotante.</p>';
+            echo '<p>Ingresa los datos donde se enviarán los mensajes desde el formulario flotante.</p>';
         },
         'wff-settings'
     );
 
+    // Campo de email
     add_settings_field(
         'wff_destinatario_email',
         'Correo destinatario',
         function () {
             $value = get_option('wff_destinatario_email', get_option('admin_email'));
             echo "<input type='email' name='wff_destinatario_email' value='" . esc_attr($value) . "' style='width: 300px;' />";
+        },
+        'wff-settings',
+        'wff_settings_section'
+    );
+
+    // Campo de número de WhatsApp
+    add_settings_field(
+        'wff_whatsapp_number',
+        'Número de WhatsApp (con lada y sin signos)',
+        function () {
+            $value = get_option('wff_whatsapp_number', '5213338087540');
+            echo "<input type='text' name='wff_whatsapp_number' value='" . esc_attr($value) . "' style='width: 300px;' />";
         },
         'wff-settings',
         'wff_settings_section'
