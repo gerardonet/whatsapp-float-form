@@ -183,10 +183,9 @@ function enviarAWhatsApp() {
   const servicio = document.getElementById('servicio').value;
   const mensaje = document.getElementById('mensaje').value.trim();
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const utm_source = urlParams.get('utm_source') || '';
-  const utm_medium = urlParams.get('utm_medium') || '';
-  const utm_campaign = urlParams.get('utm_campaign') || '';
+  const utm_source = new URLSearchParams(window.location.search).get('utm_source') || '';
+  const utm_medium = new URLSearchParams(window.location.search).get('utm_medium') || '';
+  const utm_campaign = new URLSearchParams(window.location.search).get('utm_campaign') || '';
 
   const mensajeWhatsApp = `Hola, me gustaría más información.%0A` +
                           `Me llamo: *${nombre}*%0A` +
@@ -195,14 +194,25 @@ function enviarAWhatsApp() {
                           `Servicio de interés: *${servicio}*%0A` +
                           `Mensaje: *${mensaje}*`;
 
-  fetch('/wp-json/wff/v1/enviar-correo/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nombre, email, telefono, servicio, mensaje, utm_source, utm_medium, utm_campaign })
-  });
-
   const numero = window.WFF.numeroWhatsapp || "5213338087540";
   const url = `https://wa.me/${numero}?text=${mensajeWhatsApp}`;
   window.open(url, "_blank");
+
+  // Enviar correo después
+  fetch('/wp-json/wff/v1/enviar-correo/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nombre,
+      email,
+      telefono,
+      servicio,
+      mensaje,
+      utm_source,
+      utm_medium,
+      utm_campaign
+    })
+  });
 }
 </script>
+
