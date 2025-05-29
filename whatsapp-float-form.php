@@ -119,3 +119,9 @@ function wff_render_settings_page() {
     </div>
     <?php
 }
+
+add_action('wp_footer', function () {
+    $numero_base = get_option('wff_whatsapp_number', '');
+    $numero = '521' . preg_replace('/\D/', '', $numero_base);
+    echo "<script>window.WFF = window.WFF || {}; window.WFF.numeroWhatsapp = '{$numero}';</script>";
+});
