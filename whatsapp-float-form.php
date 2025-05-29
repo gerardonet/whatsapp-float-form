@@ -1,9 +1,10 @@
 <?php
 /**
  * Plugin Name: WhatsApp Float Form
- * Description: Botón flotante con formulario que envía mensaje por WhatsApp y correo con Mailgun.
+ * Description: Botón flotante con formulario que envía mensaje por WhatsApp y correo para filtrar conversiones reales.
  * Version: 1.0
- * Author: Tu Nombre
+ * Author: Gerardo Murillo
+ * Author URI: https://netcommerce.mx
  */
 
 add_action('wp_footer', 'wff_insert_floating_form');
