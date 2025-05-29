@@ -27,7 +27,7 @@ class WP_GitHub_Updater {
     }
 
     public function plugin_info($res, $action, $args) {
-        if ($action !== 'plugin_information') return false;
+        if ($action !== 'plugin_information') return $res;
 
         $plugin_slug = plugin_basename($this->plugin_file);
         if ($args->slug !== dirname($plugin_slug)) return false;
