@@ -36,3 +36,8 @@ function wff_send_email() {
 
     wp_send_json_success('Correo enviado correctamente.');
 }
+
+add_action('admin_init', function () {
+    require_once plugin_dir_path(__FILE__) . 'updater.php';
+    new WP_GitHub_Updater(__FILE__);
+});
