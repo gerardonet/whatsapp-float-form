@@ -40,7 +40,7 @@ function wff_enviar_correo($request) {
 
     $dominio = parse_url(home_url(), PHP_URL_HOST);
     $destinatario = get_option('wff_destinatario_email', get_option('admin_email'));
-    $asunto = 'Nuevo mensaje del formulario flotante';
+    $asunto = "Nuevo lead desde $dominio";
 
     $contenido = "Hola, recibiste un nuevo lead desde $dominio:\n\n" .
                  "Nombre: $nombre\n" .
