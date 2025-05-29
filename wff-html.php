@@ -1,7 +1,3 @@
-<?php
-// Este archivo genera el HTML completo del botón flotante, formulario y scripts
-?>
-
 <!-- Estilos -->
 <style>
 #whatsapp-float {
