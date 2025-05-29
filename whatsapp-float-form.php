@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WhatsApp Float Form
  * Description: Botón flotante con formulario que envía mensaje por WhatsApp y correo para filtrar conversiones reales.
- * Version: 1.0
+ * Version: 1.0.1
  * Author: Gerardo Murillo
  * Author URI: https://netcommerce.mx
  */
