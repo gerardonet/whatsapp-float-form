@@ -93,16 +93,17 @@ add_action('admin_init', function () {
     );
 
     // Campo de número de WhatsApp
-    add_settings_field(
-        'wff_whatsapp_number',
-        'Número de WhatsApp (con lada y sin signos)',
-        function () {
-            $value = get_option('wff_whatsapp_number', '5213338087540');
-            echo "<input type='text' name='wff_whatsapp_number' value='" . esc_attr($value) . "' style='width: 300px;' />";
-        },
-        'wff-settings',
-        'wff_settings_section'
-    );
+add_settings_field(
+    'wff_whatsapp_number',
+    'Número de WhatsApp (10 dígitos sin signos)',
+    function () {
+        $value = get_option('wff_whatsapp_number', '');
+        echo "<input type='text' name='wff_whatsapp_number' value='" . esc_attr($value) . "' pattern='[0-9]{10}' maxlength='10' style='width: 300px;' required />";
+    },
+    'wff-settings',
+    'wff_settings_section'
+);
+
 });
 
 function wff_render_settings_page() {
