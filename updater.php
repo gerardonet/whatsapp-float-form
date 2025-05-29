@@ -39,7 +39,7 @@ class WP_GitHub_Updater {
             'name' => 'WhatsApp Float Form',
             'slug' => dirname($plugin_slug),
             'version' => $remote->tag_name,
-            'author' => '<a href="https://tusitio.com">Tu Nombre</a>',
+            'author' => '<a href="https://netcommerce.mx">Gerardo Murillo</a>',
             'homepage' => $remote->html_url,
             'download_link' => $remote->zipball_url,
             'sections' => [
