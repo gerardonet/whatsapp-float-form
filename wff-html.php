@@ -90,6 +90,7 @@
   width: 100%;
   font-size: 14px;
   font-family: sans-serif;
+  font-weight: bold;
 }
 </style>
 
