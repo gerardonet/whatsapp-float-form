@@ -49,12 +49,26 @@ class WP_GitHub_Updater {
     }
 
     private function get_remote_info() {
-        $request = wp_remote_get($this->github_api, [
-            'headers' => ['User-Agent' => 'WordPress Plugin Updater']
-        ]);
-        if (is_wp_error($request) || wp_remote_retrieve_response_code($request) !== 200) return false;
-        return json_decode(wp_remote_retrieve_body($request));
-    }
+    // Intenta obtener la información desde caché (transitorio)
+    $cached = get_transient('wff_latest_release');
+    if ($cached !== false) return $cached;
+
+    // Si no hay caché, llama a la API de GitHub
+    $response = wp_remote_get($this->github_api, [
+        'headers' => ['User-Agent' => 'WordPress Plugin Updater']
+    ]);
+
+    // Si hubo error o respuesta no válida, salir
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) return false;
+
+    // Decodifica la respuesta JSON
+    $release = json_decode(wp_remote_retrieve_body($response));
+
+    // Guarda en caché por 1 hora
+    set_transient('wff_latest_release', $release, HOUR_IN_SECONDS);
+
+    return $release;
+}
 
     private function get_version() {
         if (!function_exists('get_plugin_data')) require_once ABSPATH . 'wp-admin/includes/plugin.php';
