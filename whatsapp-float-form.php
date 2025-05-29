@@ -3,7 +3,7 @@
 Plugin Name: WhatsApp Float Form
 Plugin URI: https://netcommerce.mx
 Description: Formulario flotante con integración a WhatsApp.
-Version: 1.0.2
+Version: 1.0.3
 Author: Gerardo Murillo
 Author URI: https://netcommerce.mx
 */
@@ -11,7 +11,9 @@ Author URI: https://netcommerce.mx
 if (!defined('ABSPATH')) exit;
 
 // Cargar HTML + JS del formulario
-require_once plugin_dir_path(__FILE__) . 'wff-html.php';
+add_action('wp_footer', function () {
+    include plugin_dir_path(__FILE__) . 'wff-html.php';
+});
 
 // Cargar clase de actualización desde GitHub
 require_once plugin_dir_path(__FILE__) . 'updater.php';
