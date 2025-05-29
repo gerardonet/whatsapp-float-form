@@ -1,0 +1,84 @@
+#whatsapp-float {
+  position: fixed;
+  bottom: 40px;
+  right: 20px;
+  background-color: transparent;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+#whatsapp-float:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+#whatsapp-float:hover svg circle {
+  fill: #128C7E !important;
+}
+
+#form-container {
+  position: fixed;
+  bottom: 110px;
+  right: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 320px;
+  width: 90%;
+  font-family: sans-serif;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  z-index: 10000;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  pointer-events: none;
+  visibility: hidden;
+}
+#form-container.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+}
+#form-container input,
+#form-container select,
+#form-container textarea {
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+#form-container input.error,
+#form-container textarea.error,
+#form-container select.error {
+  border-color: red;
+}
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: none;
+}
+#submit-button {
+  background-color: #25D366;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 14px;
+}
+#submit-button:disabled {
+  background-color: #ccc !important;
+  cursor: not-allowed;
+  color: #666;
+}
