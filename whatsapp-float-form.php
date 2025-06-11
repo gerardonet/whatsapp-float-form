@@ -72,7 +72,34 @@ add_action('admin_menu', function () {
 
 add_action('admin_init', function () {
     register_setting('wff_settings_group', 'wff_destinatario_email');
-    register_setting('wff_settings_group', 'wff_whatsapp_number'); // <- NUEVO
+    register_setting('wff_settings_group', 'wff_whatsapp_number');
+
+    // Mostrar/ocultar el campo de servicio
+    register_setting('wff_settings_group', 'wff_mostrar_servicio');
+    add_settings_field(
+        'wff_mostrar_servicio',
+        '¿Mostrar campo "Servicio"?',
+        function () {
+            $checked = checked(1, get_option('wff_mostrar_servicio', 1), false);
+            echo "<input type='checkbox' name='wff_mostrar_servicio' value='1' $checked />";
+        },
+        'wff-settings',
+        'wff_settings_section'
+    );
+
+// Lista de opciones del campo servicio
+    register_setting('wff_settings_group', 'wff_opciones_servicio');
+    add_settings_field(
+        'wff_opciones_servicio',
+        'Opciones del campo "Servicio" (una por línea)',
+        function () {
+            $value = esc_textarea(get_option('wff_opciones_servicio', "Web Design\nWeb Development\nMarketing"));
+            echo "<textarea name='wff_opciones_servicio' rows='5' style='width: 300px;'>$value</textarea>";
+        },
+        'wff-settings',
+        'wff_settings_section'
+    );
+
 
     add_settings_section(
         'wff_settings_section',
@@ -127,5 +154,17 @@ function wff_render_settings_page() {
 add_action('wp_footer', function () {
     $numero_base = get_option('wff_whatsapp_number', '');
     $numero = '521' . preg_replace('/\D/', '', $numero_base);
-    echo "<script>window.WFF = window.WFF || {}; window.WFF.numeroWhatsapp = '{$numero}';</script>";
+
+    $mostrar_servicio = get_option('wff_mostrar_servicio', 1) ? 'true' : 'false';
+    $opciones_raw = get_option('wff_opciones_servicio', "Web Design\nWeb Development\nMarketing");
+    $opciones_array = array_map('trim', explode("\n", $opciones_raw));
+    $opciones_json = json_encode($opciones_array);
+
+    echo "<script>
+        window.WFF = window.WFF || {};
+        window.WFF.numeroWhatsapp = '{$numero}';
+        window.WFF.mostrarServicio = {$mostrar_servicio};
+        window.WFF.opcionesServicio = {$opciones_json};
+    </script>";
 });
+
