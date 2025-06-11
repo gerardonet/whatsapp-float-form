@@ -165,6 +165,8 @@
     Abrir WhatsApp
   </button>
 
+  <div id="estado-envio" style="margin-top: 10px; font-size: 13px; font-family: 'Poppins', sans-serif;"></div>
+
 </div>
 
 <!-- Scripts -->
@@ -273,6 +275,15 @@ function enviarAWhatsApp() {
   window.open(url, "_blank");
 
   // Enviar correo después, con manejo de errores
+    const estadoEnvio = document.getElementById('estado-envio');
+  const boton = document.getElementById('submit-whatsapp');
+
+  if (boton) boton.disabled = true;
+  if (estadoEnvio) {
+    estadoEnvio.textContent = 'Enviando...';
+    estadoEnvio.style.color = '#333';
+  }
+
   fetch('/wp-json/wff/v1/enviar-correo/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -288,12 +299,28 @@ function enviarAWhatsApp() {
     })
   })
   .then(res => {
-    if (!res.ok) {
-      console.error('Error en el envío del correo:', res.statusText);
+    if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+    return res.json();
+  })
+  .then(data => {
+    if (data.success) {
+      if (estadoEnvio) {
+        estadoEnvio.textContent = '¡Mensaje enviado correctamente!';
+        estadoEnvio.style.color = 'green';
+      }
+    } else {
+      throw new Error('Respuesta no exitosa');
     }
   })
   .catch(err => {
-    console.error('Fallo de red al intentar enviar el correo:', err);
+    console.error('Error en el envío:', err);
+    if (estadoEnvio) {
+      estadoEnvio.textContent = 'Ocurrió un error al enviar el mensaje. Intenta más tarde.';
+      estadoEnvio.style.color = 'red';
+    }
+  })
+  .finally(() => {
+    if (boton) boton.disabled = false;
   });
 }
 </script>
