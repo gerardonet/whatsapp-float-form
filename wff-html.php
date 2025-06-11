@@ -174,17 +174,25 @@ window.toggleFormulario = function () {
 };
 
 window.verificarCampos = function () {
-      const nombre = document.getElementById('nombre')?.value.trim();
-      const email = document.getElementById('email')?.value.trim();
-      const telefono = document.getElementById('telefono')?.value.trim();
-      const servicio = document.getElementById('servicio')?.value.trim();
-      const mensaje = document.getElementById('mensaje')?.value.trim();
-      const boton = document.getElementById('submit-whatsapp');
-      const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      const telefonoValido = /^[0-9]{10}$/.test(telefono);
-      const todosValidos = nombre && emailValido && telefonoValido && servicio && mensaje;
-      if (boton) boton.disabled = !todosValidos;
-    };
+  const nombre = document.getElementById('nombre')?.value.trim();
+  const email = document.getElementById('email')?.value.trim();
+  const telefono = document.getElementById('telefono')?.value.trim();
+  const servicio = document.getElementById('servicio')?.value.trim();
+  const mensaje = document.getElementById('mensaje')?.value.trim();
+  const boton = document.getElementById('submit-whatsapp');
+
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const telefonoValido = /^[0-9]{10}$/.test(telefono);
+
+  const campoServicio = document.getElementById('servicio');
+  const requiereServicio = campoServicio && campoServicio.offsetParent !== null;
+  const servicioValido = !requiereServicio || servicio !== '';
+
+  const todosValidos = nombre && emailValido && telefonoValido && mensaje && servicioValido;
+
+  if (boton) boton.disabled = !todosValidos;
+};
+
 
 window.validarEmail = function () {
       const email = document.getElementById('email');
