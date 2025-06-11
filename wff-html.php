@@ -149,16 +149,12 @@
   <input type="tel" id="telefono" placeholder="Tu teléfono" oninput="verificarCampos()" onblur="validarTelefono()">
   <div id="telefono-error" class="error-text">El teléfono debe tener exactamente 10 dígitos.</div>
 
+  <div id="grupo-servicio" style="display:none;">
   <select id="servicio" onchange="verificarCampos()" onblur="validarServicio()">
     <option value="">- ¿Qué servicio te interesa? -</option>
-    <option>Web Design</option>
-    <option>Web Development</option>
-    <option>Web Marketing</option>
-    <option>Web Hosting</option>
-    <option>E-Commerce</option>
-    <option>Branding</option>
   </select>
   <div id="servicio-error" class="error-text">Por favor selecciona un servicio.</div>
+</div>
 
   <textarea id="mensaje" rows="3" placeholder="Cuéntanos en qué podemos ayudarte" oninput="verificarCampos()"></textarea>
 
@@ -210,15 +206,38 @@ window.validarTelefono = function () {
       }
     };
 
-window.validarServicio = function () {
-      const select = document.getElementById('servicio');
-      const error = document.getElementById('servicio-error');
-      const valido = select?.value.trim() !== '';
-      if (select && error) {
-        error.style.display = !valido ? 'block' : 'none';
-        select.classList.toggle('error', !valido);
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.WFF?.mostrarServicio) {
+    const grupo = document.getElementById('grupo-servicio');
+    const select = document.getElementById('servicio');
+    if (grupo && select) {
+      grupo.style.display = 'block';
+      if (Array.isArray(window.WFF.opcionesServicio)) {
+        window.WFF.opcionesServicio.forEach(op => {
+          const option = document.createElement('option');
+          option.value = op;
+          option.textContent = op;
+          select.appendChild(option);
+        });
       }
-    };
+    }
+  }
+});
+
+window.validarServicio = function () {
+  const select = document.getElementById('servicio');
+  const error = document.getElementById('servicio-error');
+
+  // Si el campo no está visible, no se valida nada
+  if (!select || select.offsetParent === null) return;
+
+  const valido = select.value.trim() !== '';
+  if (error) {
+    error.style.display = !valido ? 'block' : 'none';
+    select.classList.toggle('error', !valido);
+  }
+};
+
 
 function enviarAWhatsApp() {
   const nombre = document.getElementById('nombre')?.value.trim();
@@ -230,13 +249,16 @@ function enviarAWhatsApp() {
       const utm_source = utmParams.get('utm_source') || '';
       const utm_medium = utmParams.get('utm_medium') || '';
       const utm_campaign = utmParams.get('utm_campaign') || '';
-      const mensajeWhatsApp =
+      let mensajeWhatsApp =
         `Hola, me gustaría más información.%0A` +
         `Me llamo: *${nombre}*%0A` +
         `Mi correo es: *${email}*%0A` +
-        `Mi teléfono: *${telefono}*%0A` +
-        `Servicio de interés: *${servicio}*%0A` +
-        `Mensaje: *${mensaje}*`;
+        `Mi teléfono: *${telefono}*%0A`;
+      
+      if (window.WFF?.mostrarServicio && servicio) {
+        mensajeWhatsApp += `Servicio de interés: *${servicio}*%0A`;
+      }
+      mensajeWhatsApp += `Mensaje: *${mensaje}*`;
 
   const numero = window.WFF.numeroWhatsapp || "5213338087540";
   const url = `https://wa.me/${numero}?text=${mensajeWhatsApp}`;
