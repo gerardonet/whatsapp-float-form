@@ -49,7 +49,7 @@ function wff_enviar_correo($request) {
                  "Nombre: $nombre\n" .
                  "Correo: $email\n" .
                  "Teléfono: $telefono\n" .
-                 "Servicio: $servicio\n" .
+                 (!empty($servicio) ? "Servicio: $servicio\n" : '') .
                  "Mensaje: $mensaje\n\n" .
                  "Campaña: $utm_campaign";
 
