@@ -314,6 +314,8 @@ function enviarAWhatsApp() {
         const servicioSelect = document.getElementById('servicio');
         if (servicioSelect) servicioSelect.value = '';
         verificarCampos();
+        // Cierra el formulario automáticamente
+        document.getElementById('form-container')?.classList.remove('show');
       }
     } else {
       throw new Error('Respuesta no exitosa');
