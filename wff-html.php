@@ -307,6 +307,13 @@ function enviarAWhatsApp() {
       if (estadoEnvio) {
         estadoEnvio.textContent = '¡Mensaje enviado correctamente!';
         estadoEnvio.style.color = 'green';
+        document.getElementById('nombre').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('telefono').value = '';
+        document.getElementById('mensaje').value = '';
+        const servicioSelect = document.getElementById('servicio');
+        if (servicioSelect) servicioSelect.value = '';
+        verificarCampos();
       }
     } else {
       throw new Error('Respuesta no exitosa');
