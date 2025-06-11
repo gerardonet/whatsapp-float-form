@@ -58,7 +58,6 @@ function wff_enviar_correo($request) {
     return rest_ensure_response(['success' => true]);
 }
 
-
 // Configuración desde el panel de WordPress
 add_action('admin_menu', function () {
     add_options_page(
@@ -71,8 +70,29 @@ add_action('admin_menu', function () {
 });
 
 add_action('admin_init', function () {
-    register_setting('wff_settings_group', 'wff_destinatario_email');
-    register_setting('wff_settings_group', 'wff_whatsapp_number');
+    // Validación personalizada del correo
+    register_setting('wff_settings_group', 'wff_destinatario_email', [
+        'sanitize_callback' => function ($input) {
+            $email = sanitize_email($input);
+            if (!is_email($email)) {
+                add_settings_error('wff_destinatario_email', 'invalid_email', 'El correo electrónico no es válido.', 'error');
+                return get_option('wff_destinatario_email');
+            }
+            return $email;
+        }
+    ]);
+
+    // Validación personalizada del número de WhatsApp
+    register_setting('wff_settings_group', 'wff_whatsapp_number', [
+        'sanitize_callback' => function ($input) {
+            $input = preg_replace('/\D/', '', $input);
+            if (strlen($input) !== 10) {
+                add_settings_error('wff_whatsapp_number', 'invalid_number', 'El número de WhatsApp debe tener exactamente 10 dígitos.', 'error');
+                return get_option('wff_whatsapp_number');
+            }
+            return $input;
+        }
+    ]);
 
     // Mostrar/ocultar el campo de servicio
     register_setting('wff_settings_group', 'wff_mostrar_servicio');
@@ -87,7 +107,7 @@ add_action('admin_init', function () {
         'wff_settings_section'
     );
 
-// Lista de opciones del campo servicio
+    // Lista de opciones del campo servicio
     register_setting('wff_settings_group', 'wff_opciones_servicio');
     add_settings_field(
         'wff_opciones_servicio',
@@ -99,7 +119,6 @@ add_action('admin_init', function () {
         'wff-settings',
         'wff_settings_section'
     );
-
 
     add_settings_section(
         'wff_settings_section',
@@ -116,24 +135,23 @@ add_action('admin_init', function () {
         'Correo destinatario',
         function () {
             $value = get_option('wff_destinatario_email', get_option('admin_email'));
-            echo "<input type='email' name='wff_destinatario_email' value='" . esc_attr($value) . "' style='width: 300px;' />";
+            echo "<input type='email' name='wff_destinatario_email' value='" . esc_attr($value) . "' style='width: 300px;' required />";
         },
         'wff-settings',
         'wff_settings_section'
     );
 
     // Campo de número de WhatsApp
-add_settings_field(
-    'wff_whatsapp_number',
-    'Número de WhatsApp (10 dígitos sin signos)',
-    function () {
-        $value = get_option('wff_whatsapp_number', '');
-        echo "<input type='text' name='wff_whatsapp_number' value='" . esc_attr($value) . "' pattern='[0-9]{10}' maxlength='10' style='width: 300px;' required />";
-    },
-    'wff-settings',
-    'wff_settings_section'
-);
-
+    add_settings_field(
+        'wff_whatsapp_number',
+        'Número de WhatsApp (10 dígitos sin signos)',
+        function () {
+            $value = get_option('wff_whatsapp_number', '');
+            echo "<input type='text' name='wff_whatsapp_number' value='" . esc_attr($value) . "' pattern='[0-9]{10}' maxlength='10' style='width: 300px;' required />";
+        },
+        'wff-settings',
+        'wff_settings_section'
+    );
 });
 
 function wff_render_settings_page() {
@@ -167,4 +185,3 @@ add_action('wp_footer', function () {
         window.WFF.opcionesServicio = {$opciones_json};
     </script>";
 });
-
