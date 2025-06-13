@@ -11,18 +11,12 @@ Author: Gerardo Murillo
 Author URI: https://netcommerce.mx
 */
 
+// Panel de ajustes en WP Admin
 add_action('admin_menu', function () {
-    add_options_page(
-        'WhatsApp Float Form',
-        'WhatsApp Float Form',
-        'manage_options',
-        'wff-settings',
-        'wff_render_settings_page'
-    );
+    add_options_page('WhatsApp Float Form', 'WhatsApp Float Form', 'manage_options', 'wff-settings', 'wff_render_settings_page');
 });
 
 add_action('admin_init', function () {
-    // Validaciones personalizadas
     register_setting('wff_settings_group', 'wff_destinatario_email', [
         'sanitize_callback' => function ($input) {
             $email = sanitize_email($input);
@@ -90,6 +84,7 @@ function wff_render_settings_page() {
     echo '</div>';
 }
 
+// Insertar script en el footer
 add_action('wp_footer', function () {
     $numero_base = get_option('wff_whatsapp_number', '');
     $numero = '521' . preg_replace('/\D/', '', $numero_base);
@@ -101,7 +96,7 @@ add_action('wp_footer', function () {
     $opciones_json = esc_attr(json_encode($opciones_array));
 
     echo "<script 
-        src='https://gerardonet.github.io/whatsapp-widget-netcommerce/whatsapp-widget-wp.js'
+        src='https://gerardonet.github.io/whatsapp-widget-netcommerce/whatsapp-widget-wp.js' 
         defer 
         data-whatsapp='{$numero}' 
         data-email='{$correo}' 
@@ -110,3 +105,44 @@ add_action('wp_footer', function () {
         data-etiqueta-servicio='{$etiqueta_servicio}'
     ></script>";
 });
+
+// Endpoint para envío de correo
+add_action('rest_api_init', function () {
+    register_rest_route('wff/v1', '/enviar-correo/', [
+        'methods'  => 'POST',
+        'callback' => 'wff_enviar_correo',
+        'permission_callback' => '__return_true'
+    ]);
+});
+
+function wff_enviar_correo($request) {
+    $params = $request->get_params();
+    $nombre = sanitize_text_field($params['nombre'] ?? '');
+    $email = sanitize_email($params['email'] ?? '');
+    $telefono = sanitize_text_field($params['telefono'] ?? '');
+    $servicio = sanitize_text_field($params['servicio'] ?? '');
+    $mensaje = sanitize_textarea_field($params['mensaje'] ?? '');
+    $utm_source = sanitize_text_field($params['utm_source'] ?? '');
+    $utm_medium = sanitize_text_field($params['utm_medium'] ?? '');
+    $utm_campaign = sanitize_text_field($params['utm_campaign'] ?? '');
+
+    $destinatario = get_option('wff_destinatario_email', get_option('admin_email'));
+
+    $contenido = "Nuevo mensaje desde el formulario flotante de WhatsApp:\n\n";
+    $contenido .= "Nombre: $nombre\nCorreo: $email\nTeléfono: $telefono\n";
+    if (!empty($servicio)) {
+        $contenido .= "Servicio de interés: $servicio\n";
+    }
+    $contenido .= "Mensaje: $mensaje\n\n";
+    if ($utm_source || $utm_medium || $utm_campaign) {
+        $contenido .= "—— Información de origen ——\n";
+        $contenido .= "UTM Source: $utm_source\nUTM Medium: $utm_medium\nUTM Campaign: $utm_campaign\n";
+    }
+
+    $headers = ['Content-Type: text/plain; charset=UTF-8'];
+    $asunto = "Nuevo mensaje de $nombre desde el formulario flotante";
+
+    wp_mail($destinatario, $asunto, $contenido, $headers);
+
+    return new WP_REST_Response(['success' => true]);
+}
