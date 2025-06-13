@@ -96,14 +96,15 @@ add_action('wp_footer', function () {
     $opciones_json = esc_attr(json_encode($opciones_array));
 
     echo "<script 
-        src='https://gerardonet.github.io/whatsapp-widget-netcommerce/whatsapp-widget-wp.js' 
-        defer 
-        data-whatsapp='{$numero}' 
-        data-email='{$correo}' 
-        data-mostrar-servicio='{$mostrar_servicio}' 
-        data-opciones-servicio='{$opciones_json}' 
-        data-etiqueta-servicio='{$etiqueta_servicio}'
-    ></script>";
+  src='https://gerardonet.github.io/whatsapp-widget-netcommerce/whatsapp-widget-wp.js' 
+  defer 
+  data-whatsapp='5213310000000' 
+  data-email='prueba@ejemplo.com' 
+  data-mostrar-servicio='false' 
+  data-opciones-servicio='[\"Opción 1\",\"Opción 2\"]' 
+  data-etiqueta-servicio='¿Qué servicio te interesa?'
+></script>";
+
 });
 
 // Endpoint para envío de correo
