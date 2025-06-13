@@ -3,7 +3,7 @@
 Plugin Name: WhatsApp Float Form
 Plugin URI: https://netcommerce.mx
 Description: Botón flotante con integración a WhatsApp. Recibe avisos por correo de cada lead que se ponga en contacto.
-Version: 1.2.1
+Version: 1.2.2
 Requires at least: 6.0
 Tested up to: 6.8.1
 Requires PHP: 8.0
