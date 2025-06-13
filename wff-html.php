@@ -333,31 +333,3 @@ function enviarAWhatsApp() {
   });
 }
 </script>
-
-<script>
-(function() {
-  const widget = document.getElementById('form-container');
-  const boton = document.getElementById('whatsapp-float');
-
-  function enviarEventoGTM(elemento) {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: 'wff_widget_click',
-      element: elemento.tagName,
-      element_id: elemento.id || null,
-      element_class: elemento.className || null,
-      widget_part: elemento.closest('#form-container') ? 'formulario' : 'boton'
-    });
-  }
-
-  // Escuchar todos los clics dentro del formulario
-  widget?.addEventListener('click', function(e) {
-    enviarEventoGTM(e.target);
-  });
-
-  // Escuchar clic en el botón flotante
-  boton?.addEventListener('click', function(e) {
-    enviarEventoGTM(e.target);
-  });
-})();
-</script>
