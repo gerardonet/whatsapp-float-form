@@ -101,7 +101,7 @@ add_action('wp_footer', function () {
     $opciones_json = esc_attr(json_encode($opciones_array));
 
     echo "<script 
-        src='https://gerardonet.github.io/whatsapp-widget-netcommerce/whatsapp-widget.js' 
+        src='https://gerardonet.github.io/whatsapp-widget-netcommerce/whatsapp-widget-wp.js'
         defer 
         data-whatsapp='{$numero}' 
         data-email='{$correo}' 
