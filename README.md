@@ -3,13 +3,16 @@ Contributors: Gerardo Murillo
 Tags: WhatsApp, Leads
 Requires at least: 6.0
 Tested up to: 6.8.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPL2
 
 == Description ==
 Botón flotante con integración a WhatsApp. Recibe avisos por correo de cada lead que se ponga en contacto.
 
 == Changelog ==
+= 1.2.2 =
+* Correción para que GTM pueda detectar los clics.
+
 = 1.2.1 =
 * Ajustes en el campo de "¿Qué servicio te interesa?". Ahora se podrá ocultar desde el admin.
 
