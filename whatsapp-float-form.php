@@ -13,52 +13,8 @@ Author URI: https://netcommerce.mx
 
 if (!defined('ABSPATH')) exit;
 
-// Cargar HTML + JS del formulario
-add_action('wp_footer', function () {
-    include plugin_dir_path(__FILE__) . 'wff-html.php';
-});
+// === 1. Configuración del plugin en el panel de administración ===
 
-// Cargar clase de actualización desde GitHub
-require_once plugin_dir_path(__FILE__) . 'updater.php';
-new WP_GitHub_Updater(__FILE__);
-
-// Endpoint para recibir datos y enviar correo
-add_action('rest_api_init', function () {
-    register_rest_route('wff/v1', '/enviar-correo/', [
-        'methods'  => 'POST',
-        'callback' => 'wff_enviar_correo',
-        'permission_callback' => '__return_true',
-    ]);
-});
-
-function wff_enviar_correo($request) {
-    $params = $request->get_json_params();
-
-    $nombre = sanitize_text_field($params['nombre'] ?? '');
-    $email = sanitize_email($params['email'] ?? '');
-    $telefono = sanitize_text_field($params['telefono'] ?? '');
-    $servicio = sanitize_text_field($params['servicio'] ?? '');
-    $mensaje = sanitize_textarea_field($params['mensaje'] ?? '');
-    $utm_campaign = sanitize_text_field($params['utm_campaign'] ?? '');
-
-    $dominio = parse_url(home_url(), PHP_URL_HOST);
-    $destinatario = get_option('wff_destinatario_email', get_option('admin_email'));
-    $asunto = "Nuevo lead desde $dominio";
-
-    $contenido = "Hola, recibiste un nuevo lead desde $dominio:\n\n" .
-                 "Nombre: $nombre\n" .
-                 "Correo: $email\n" .
-                 "Teléfono: $telefono\n" .
-                 (!empty($servicio) ? "Servicio: $servicio\n" : '') .
-                 "Mensaje: $mensaje\n\n" .
-                 "Campaña: $utm_campaign";
-
-    wp_mail($destinatario, $asunto, $contenido);
-
-    return rest_ensure_response(['success' => true]);
-}
-
-// Configuración desde el panel de WordPress
 add_action('admin_menu', function () {
     add_options_page(
         'WhatsApp Float Form',
@@ -70,7 +26,6 @@ add_action('admin_menu', function () {
 });
 
 add_action('admin_init', function () {
-    // Validación personalizada del correo
     register_setting('wff_settings_group', 'wff_destinatario_email', [
         'sanitize_callback' => function ($input) {
             $email = sanitize_email($input);
@@ -82,7 +37,6 @@ add_action('admin_init', function () {
         }
     ]);
 
-    // Validación personalizada del número de WhatsApp
     register_setting('wff_settings_group', 'wff_whatsapp_number', [
         'sanitize_callback' => function ($input) {
             $input = preg_replace('/\D/', '', $input);
@@ -94,31 +48,8 @@ add_action('admin_init', function () {
         }
     ]);
 
-    // Mostrar/ocultar el campo de servicio
     register_setting('wff_settings_group', 'wff_mostrar_servicio');
-    add_settings_field(
-        'wff_mostrar_servicio',
-        '¿Mostrar campo "Servicio"?',
-        function () {
-            $checked = checked(1, get_option('wff_mostrar_servicio', 1), false);
-            echo "<input type='checkbox' name='wff_mostrar_servicio' value='1' $checked />";
-        },
-        'wff-settings',
-        'wff_settings_section'
-    );
-
-    // Lista de opciones del campo servicio
     register_setting('wff_settings_group', 'wff_opciones_servicio');
-    add_settings_field(
-        'wff_opciones_servicio',
-        'Opciones del campo "Servicio" (una por línea)',
-        function () {
-            $value = esc_textarea(get_option('wff_opciones_servicio', "Web Design\nWeb Development\nMarketing"));
-            echo "<textarea name='wff_opciones_servicio' rows='5' style='width: 300px;'>$value</textarea>";
-        },
-        'wff-settings',
-        'wff_settings_section'
-    );
 
     add_settings_section(
         'wff_settings_section',
@@ -129,7 +60,6 @@ add_action('admin_init', function () {
         'wff-settings'
     );
 
-    // Campo de email
     add_settings_field(
         'wff_destinatario_email',
         'Correo destinatario',
@@ -141,13 +71,34 @@ add_action('admin_init', function () {
         'wff_settings_section'
     );
 
-    // Campo de número de WhatsApp
     add_settings_field(
         'wff_whatsapp_number',
         'Número de WhatsApp (10 dígitos sin signos)',
         function () {
             $value = get_option('wff_whatsapp_number', '');
             echo "<input type='text' name='wff_whatsapp_number' value='" . esc_attr($value) . "' pattern='[0-9]{10}' maxlength='10' style='width: 300px;' required />";
+        },
+        'wff-settings',
+        'wff_settings_section'
+    );
+
+    add_settings_field(
+        'wff_mostrar_servicio',
+        '¿Mostrar campo "Servicio"?',
+        function () {
+            $checked = checked(1, get_option('wff_mostrar_servicio', 1), false);
+            echo "<input type='checkbox' name='wff_mostrar_servicio' value='1' $checked />";
+        },
+        'wff-settings',
+        'wff_settings_section'
+    );
+
+    add_settings_field(
+        'wff_opciones_servicio',
+        'Opciones del campo "Servicio" (una por línea)',
+        function () {
+            $value = esc_textarea(get_option('wff_opciones_servicio', "Web Design\nWeb Development\nMarketing"));
+            echo "<textarea name='wff_opciones_servicio' rows='5' style='width: 300px;'>$value</textarea>";
         },
         'wff-settings',
         'wff_settings_section'
@@ -169,7 +120,11 @@ function wff_render_settings_page() {
     <?php
 }
 
+// === 2. Insertar HTML del botón flotante y formulario ===
+
 add_action('wp_footer', function () {
+    include plugin_dir_path(__FILE__) . 'wff-html.php';
+
     $numero_base = get_option('wff_whatsapp_number', '');
     $numero = '521' . preg_replace('/\D/', '', $numero_base);
 
@@ -185,3 +140,43 @@ add_action('wp_footer', function () {
         window.WFF.opcionesServicio = {$opciones_json};
     </script>";
 });
+
+// === 3. Cargar clase de actualización desde GitHub ===
+
+require_once plugin_dir_path(__FILE__) . 'updater.php';
+new WP_GitHub_Updater(__FILE__);
+
+// === 4. Endpoint para enviar correo desde formulario ===
+
+add_action('rest_api_init', function () {
+    register_rest_route('wff/v1', '/enviar-correo/', [
+        'methods'  => 'POST',
+        'callback' => 'wff_enviar_correo',
+        'permission_callback' => '__return_true',
+    ]);
+});
+
+function wff_enviar_correo($request) {
+    $params = $request->get_json_params();
+
+    $nombre = sanitize_text_field($params['nombre'] ?? '');
+    $email = sanitize_email($params['email'] ?? '');
+    $telefono = sanitize_text_field($params['telefono'] ?? '');
+    $servicio = sanitize_text_field($params['servicio'] ?? '');
+    $mensaje = sanitize_textarea_field($params['mensaje'] ?? '');
+    $utm_campaign = sanitize_text_field($params['utm_campaign'] ?? '');
+
+    $dominio = parse_url(home_url(), PHP_URL_HOST);
+    $destinatario = get_option('wff_destinatario_email', get_option('admin_email'));
+
+    $asunto = "Nuevo mensaje desde botón WhatsApp ($dominio)";
+    $cuerpo = "Nombre: $nombre\nCorreo: $email\nTeléfono: $telefono\nServicio: $servicio\nMensaje:\n$mensaje\n\nUTM Campaign: $utm_campaign";
+
+    $headers = ['Content-Type: text/plain; charset=UTF-8'];
+
+    $enviado = wp_mail($destinatario, $asunto, $cuerpo, $headers);
+
+    return rest_ensure_response([
+        'success' => $enviado,
+    ]);
+}
